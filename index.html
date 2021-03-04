@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta name='viewport' content='width=device-width, initial-scale=1'>
+	<title>Send G4</title>
+	<link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SXSFYB9LE4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'XXXXX');
+</script>
+
+
+	<style type='text/css'>
+        
+	* {
+  	box-sizing: border-box;
+	}
+
+	body {
+    	font-family: 'Quicksand', 'Helvetica', sans-serif;
+  
+	}
+	.title-row {
+    	height: 40px;
+    	text-align: center;
+    	margin-top:30px;
+	}
+	.container {
+		position: absolute;
+		display: flex;
+		border: 1px solid green;
+		flex-direction: column;
+  		top: 50%;
+  		left: 50%;
+  		transform: translate(-50%, -50%);
+	}
+	.grid-container {
+ 		display: grid;
+  		grid-template-columns: auto auto;
+  		grid-gap: 10px;
+ 		padding: 10px;
+		}
+	.button-container {
+ 		display: grid;
+  		grid-template-columns: auto auto auto;
+  		grid-gap: 10px;
+  		border-color: slategray;
+ 		padding: 10px;
+		}
+	.label {
+		text-align: center;
+	}
+	.top-label {
+		text-align: center;
+		font-weight: bold;
+	}
+	.gbutton {
+		margin: 3px 3px;
+  		text-align: center;
+  		border-radius: 5px;
+  		height: 40px;
+  		padding: 12px 20px;
+  		width: calc( 8 * 18px );
+	}
+	.gbutton:active {
+		background-color: gray;
+		font-weight: bold;
+	}
+input[type=text], input[type=number], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+
+	</style>
+
+	<script>
+		function send(){
+			var event = document.getElementById( 'ename').value.trim();
+			if ( event.length == 0 ) {
+				alert( 'No event');
+				return;
+			} 
+			var scount = document.getElementById( 'enumber').value;
+			var count = 1;
+			try {
+				count = Number( scount );
+			} catch {
+				alert( "Bad count. Using " + count );
+			}
+			var params = {};
+			
+			for ( var i = 1; i <= 5; i++ ) {
+				var param = document.getElementById( 'pname'+ i ).value.trim();
+				var value = document.getElementById( 'vname'+ i ).value.trim();
+				if ( param.length == 0 && value.length == 0 ) {
+					// ignore
+				} else if ( param.length == 0 ) {
+					alert( 'Value without parameter: ' + value );
+					return;
+				} else if ( value.length == 0 ) {
+					alert( 'Parameter without value: ' + param );
+					return;
+				} else {
+					if ( value.toLowerCase() == 'true') {
+						params[ param ] = true;
+					} else if ( value.toLowerCase() == 'false') {
+						params[ param ] = false;
+					} else {
+						try {
+							var nval = Number( value );
+							if ( nval == nval ) { // NAN never equals itself
+								params[ param ] = nval;
+							} else {
+								params[ param ] = value;
+							}
+						} catch {
+							params[ param ] = value;
+						}
+					}
+				}
+			}
+			//console.log( event, count, params);
+			for ( var i = 0; i < count; i++ ) {
+				if ( params.length == 0 ) {
+					gtag( 'event', event )
+				} else {
+					gtag ('event', event, params )
+				}
+			}
+		}
+
+		function clearAll() {
+			document.getElementById( 'ename').value = '';
+			for ( var i = 1; i <= 5; i++ ) {
+				document.getElementById( 'pname'+ i ).value = '';
+				document.getElementById( 'vname'+ i ).value = '';
+			}
+		}
+		function clearValues() {
+			for ( var i = 1; i <= 5; i++ ) {
+				document.getElementById( 'vname'+ i ).value = '';
+			}
+		}
+
+	</script>
+	</head>
+	<body>
+		<h1 class='title-row'>Send G4 Events</h1>
+		<div class='container'>
+
+			<div class='grid-container'>
+				<div class='label'>Event</div><input type='text' id='ename' name='ename'>
+				<div class='label'>Number to send</div><input type='number' min='1' id='enumber' name='enumber' value='1'> 
+				<p></p><p></p>
+				<div class='top-label'>Parameter</div><div class='top-label'>Value</div>
+				<input type='text' id='pname1' name='pname1'><input type='text' id='vname1' name='vname1'> 
+				<input type='text' id='pname2' name='pname2'><input type='text' id='vname2' name='vname2'> 
+				<input type='text' id='pname3' name='pname3'><input type='text' id='vname3' name='vname3'> 
+				<input type='text' id='pname4' name='pname4'><input type='text' id='vname4' name='vname4'> 
+				<input type='text' id='pname5' name='pname5'><input type='text' id='vname5' name='vname5'> 
+			</div>
+			<div class='button-container'>
+				<button onclick='clearValues()' class='gbutton' type='button'>Clear Values</button>
+				<button onclick='clearAll()' class='gbutton'type='button'>Clear All</button>
+				<button onclick='send()' class='gbutton' type='button'>Send Event</button>
+			</div>
+		</div>
+	</body>
+</html>
