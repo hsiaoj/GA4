@@ -2,7 +2,7 @@
 <html>
 	<head>
 	<meta name='viewport' content='width=device-width, initial-scale=1'>
-	<title>G4 Event Builder</title>
+	<title>G4 Event Bulder</title>
 	<link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>
 
 
@@ -25,6 +25,7 @@
 
 	body {
     	font-family: 'Quicksand', 'Helvetica', sans-serif;
+    	font-size:15px;
   
 	}
 	.title-row {
@@ -53,7 +54,16 @@
   		grid-gap: 10px;
   		border-color: slategray;
  		padding: 10px;
-		}
+	}
+	.console-container {
+ 		display: grid;
+  		grid-template-columns:auto;
+  		grid-gap: 10px;
+  		border-color: slategray;
+ 		max-width: calc( 40 * 16px);
+ 		padding: 0 10px 10px 10px;
+ 		height: 4em;
+	}
 	.label {
 		text-align: center;
 	}
@@ -73,10 +83,20 @@
 		background-color: gray;
 		font-weight: bold;
 	}
+	.console {
+		width:100%;
+		height:100%;
+		font-size:13px;
+		word-wrap: break-word;
+		overflow:auto;
+		border: 1px solid #ccc;
+
+	}
 input[type=text], input[type=number], select {
   width: 100%;
   padding: 12px 20px;
   margin: 0;
+  font-size:15px;
   display: inline-block;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -123,6 +143,7 @@ input[type=text], input[type=number], select {
 							var nval = Number( value );
 							if ( nval == nval ) { // NAN never equals itself
 								params[ param ] = nval;
+								paramsMap.set( param, nval );
 							} else {
 								params[ param ] = value;
 							}
@@ -140,6 +161,13 @@ input[type=text], input[type=number], select {
 					gtag ('event', event, params )
 				}
 			}
+			var ptext = "";
+			for (const [key, value] of Object.entries(params)) {
+				ptext = ptext + '{' + key + ',' + value + '} ';
+			}
+			
+			document.getElementById( 'track').innerHTML = event + ' sent (' + count + ') ' + ptext;
+	
 		}
 
 		function clearAll() {
@@ -176,6 +204,9 @@ input[type=text], input[type=number], select {
 				<button onclick='clearValues()' class='gbutton' type='button'>Clear Values</button>
 				<button onclick='clearAll()' class='gbutton'type='button'>Clear All</button>
 				<button onclick='send()' class='gbutton' type='button'>Send Event</button>
+			</div>
+			<div class='console-container'>
+				<div class='console' id='track'  name='track'></textarea>
 			</div>
 		</div>
 	</body>
