@@ -7,15 +7,25 @@
 
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SXSFYB9LE4"></script>
 <script>
+  const DEFAULT_TAG = 'G-DJC1QNYVKT';
+
+
+  var _tag = localStorage.getItem( 'tag' );
+  _tag = null == _tag ? DEFAULT_TAG : _tag;
+
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.async = true;
+  script.src = "//www.googletagmanager.com/gtag/js?id=" + _tag;
+  document.getElementsByTagName("head")[0].appendChild(script);
+
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+  gtag('config', _tag );
 
-  gtag('config', 'G-DJC1QNYVKT');
 </script>
-
 
 	<style type='text/css'>
         
@@ -48,7 +58,7 @@
   		grid-gap: 10px;
  		padding: 10px;
 		}
-	.button-container {
+	.button-container, .site-container {
  		display: grid;
   		grid-template-columns: auto auto auto;
   		grid-gap: 10px;
@@ -67,21 +77,29 @@
 	.label {
 		text-align: center;
 	}
+	.tag {
+
+	}
+
 	.top-label {
 		text-align: center;
 		font-weight: bold;
 	}
-	.gbutton {
+	.gbutton, .tbutton {
 		margin: 3px 3px;
   		text-align: center;
   		border-radius: 5px;
   		height: 40px;
   		padding: 12px 20px;
   		width: calc( 8 * 18px );
+  		background-color: lightgray;
 	}
 	.gbutton:active {
 		background-color: gray;
 		font-weight: bold;
+	}
+	.gbutton:disabled {
+		background-color: darkgray;
 	}
 	.console {
 		width:100%;
@@ -107,6 +125,30 @@ input[type=text], input[type=number], select {
 	</style>
 
 	<script>
+		function setup() {
+			var tag = localStorage.getItem( 'tag' );
+			tag = null == tag ? DEFAULT_TAG : tag;
+			document.getElementById( 'tag').value = tag;
+			
+			var ename = localStorage.getItem( 'ename');
+			if ( null != event ) {
+				document.getElementById( 'ename').value = ename;
+			}
+			var enumber = localStorage.getItem( 'enumber');
+			if ( null != event ) {
+				document.getElementById( 'enumber').value = enumber;
+			}
+			for ( var i = 1; i <= 5; i++ ) {
+				var param = localStorage.getItem( 'pname' + i );
+				if ( null != param ) {
+					document.getElementById( 'pname'+ i ).value = param;
+				}
+				var value = localStorage.getItem( 'value' + i );
+				document.getElementById( 'vname'+ i ).value = value;
+			}
+
+		}
+
 		function send(){
 			var event = document.getElementById( 'ename').value.trim();
 			if ( event.length == 0 ) {
@@ -165,7 +207,7 @@ input[type=text], input[type=number], select {
 			for (const [key, value] of Object.entries(params)) {
 				ptext = ptext + '{' + key + ',' + value + '} ';
 			}
-			
+			saveFields();
 			document.getElementById( 'track').innerHTML = event + ' sent (' + count + ') ' + ptext;
 	
 		}
@@ -176,19 +218,50 @@ input[type=text], input[type=number], select {
 				document.getElementById( 'pname'+ i ).value = '';
 				document.getElementById( 'vname'+ i ).value = '';
 			}
+			saveFields();
 		}
 		function clearValues() {
 			for ( var i = 1; i <= 5; i++ ) {
 				document.getElementById( 'vname'+ i ).value = '';
 			}
+			saveFields();
+		}
+
+		function saveFields() {
+			var tag = document.getElementById( 'tag').value;
+			localStorage.setItem( 'tag', tag );
+			var event = document.getElementById( 'ename').value.trim();
+			localStorage.setItem( 'ename', event );
+			var enumber = document.getElementById( 'enumber').value;
+			localStorage.setItem( 'enumber', enumber );
+			for ( var i = 1; i <= 5; i++ ) {
+				var param = document.getElementById( 'pname'+ i ).value.trim();
+				var value = document.getElementById( 'vname'+ i ).value.trim();
+				localStorage.setItem( 'pname' + i, param );
+				localStorage.setItem( 'value' + i, value );
+			}
+
+		}
+		function changeTag() {
+			saveFields();
+			history.go(0);
+		}
+		function disableButtons() {
+			var buttons = document.getElementsByClassName( 'gbutton');
+			for ( var i = 0; i < buttons.length; i++ ) {
+				buttons[ i ].disabled = true;
+			}
 		}
 
 	</script>
 	</head>
-	<body>
+	<body onload='setup()'>
 		<h1 class='title-row'>Send G4 Events</h1>
 		<div class='container'>
 
+			<div class='site-container'>
+				<div class='label tag'>Site Tag</div><input type='text' oninput='disableButtons()' id='tag' name='tag'><button onclick='changeTag()' class='tbutton' type='button'>Change Site Tag</button>
+			</div>
 			<div class='grid-container'>
 				<div class='label'>Event</div><input type='text' id='ename' name='ename'>
 				<div class='label'>Number to send</div><input type='number' min='1' id='enumber' name='enumber' value='1'> 
